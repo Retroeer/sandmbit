@@ -62,7 +62,6 @@ public static class TeamExtensions
 		return Entity.All.OfType<Pawn>().Where( e => e.Team == team ).Count();
 	}
 
-
 	public static Team GetLowestCount( this Team team )
 	{
 		var AlphaCount = GetCount( Team.Alpha );
@@ -73,10 +72,8 @@ public static class TeamExtensions
 
 		return Team.Alpha;
 	}
-
-	
-
 }
+
 public static class TeamSystem
 {
 	public static T ToEnum<T>( this string enumString )

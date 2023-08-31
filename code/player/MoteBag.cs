@@ -1,4 +1,5 @@
 ﻿using Sandbox.player;
+using Sandmbit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,12 +58,21 @@ namespace Sandbox.player
 			if ((Motes+1) <= MaxMotes)
 			{
 				Motes++;
-				Log.Info( $"Pick up mote (have {Motes}/{MaxMotes}, blocker={AffordableBlocker()})" );
+				Log.Info( $"picked up mote (have {Motes}/{MaxMotes}, blocker={AffordableBlocker()})" );
 				Game.RootPanel.StateHasChanged();
 				return true;
 			}
 			else
 				return false;
 		}
+
+		//public void SetScore( Team team, int score )
+		//{
+		//	var newScore = Math.Clamp( score, 0, GetMaxScore() );
+		//	Scores[(int)team] = newScore;
+		//	OldScores = new int[ArraySize];
+
+		//	WriteNetworkData();
+		//}
 	}
 }
