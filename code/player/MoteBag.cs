@@ -70,7 +70,7 @@ namespace Sandbox.player
 		}
 		
 		void OnMotesChanged(int oldValue, int newValue) {
-			Game.RootPanel.StateHasChanged();
+			//Game.RootPanel.StateHasChanged();
 		}
 	}
 }

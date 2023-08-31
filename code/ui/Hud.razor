@@ -12,14 +12,17 @@
     <VoiceList/>
 
     <div class="header">
-        @*<label>Gambit</label>*@
-        @{var motes = Player.Motebag;}
+        @if(Player.LifeState != LifeState.Dead)
+        {
+            @*<label>Gambit</label>*@
+            @{var motes = Player?.Motebag;}
 
-        <label>@motes.Motes | Collected@(motes.Motes == motes.MaxMotes ? " (Max)" : "")</label>
-        @if (@motes.AffordableBlocker() != BlockerType.None)
-        {   
-            <i class="hudlabel destiny-keys">@motes.AffordableBlocker().Glyph() | Deposit for @motes.AffordableBlocker() Blocker</i>
-        }
+            <label>@motes.Motes | Collected@(motes.Motes == motes.MaxMotes ? " (Max)" : "")</label>
+            @if (@motes.AffordableBlocker() != BlockerType.None)
+            {   
+                <i class="hudlabel destiny-keys">@motes.AffordableBlocker().Glyph() | Deposit for @motes.AffordableBlocker() Blocker</i>
+            }
+        }  
     </div>
 
     @*<i class="hudlabel destiny-keys"> Deposit motes</i>*@
@@ -39,10 +42,10 @@
 @code
 {
     public Pawn Player => Game.LocalPawn as Pawn;
-    public string Motes => $"{Player?.Motebag.Motes}";
+    public string Motes => $"{Player?.Motebag?.Motes}";
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(Motes);
+        return HashCode.Combine(Motes, Player);
     }
 }
