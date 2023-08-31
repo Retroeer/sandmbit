@@ -1,4 +1,5 @@
 ﻿using Sandbox.player;
+using Sandmbit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,6 @@ namespace Sandbox.player
 			if ((Motes+1) <= MaxMotes)
 			{
 				Motes++;
-				// Game.RootPanel.StateHasChanged();
 				return true;
 			}
 			else
@@ -67,5 +67,14 @@ namespace Sandbox.player
 		void OnMotesChanged(int oldValue, int newValue) {
 			Game.RootPanel.StateHasChanged();
 		}
+
+		//public void SetScore( Team team, int score )
+		//{
+		//	var newScore = Math.Clamp( score, 0, GetMaxScore() );
+		//	Scores[(int)team] = newScore;
+		//	OldScores = new int[ArraySize];
+
+		//	WriteNetworkData();
+		//}
 	}
 }

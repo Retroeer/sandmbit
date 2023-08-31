@@ -1,11 +1,12 @@
 ﻿using Sandbox;
+using Sandbox.Component;
 using Sandbox.entity;
 using Sandbox.player;
 using System;
 using System.ComponentModel;
-using Microsoft.VisualBasic;
+using System.Linq;
 
-namespace MyGame;
+namespace Sandmbit;
 
 public partial class Pawn : AnimatedEntity
 {
@@ -14,6 +15,17 @@ public partial class Pawn : AnimatedEntity
 	[ClientInput] public Vector3 InputDirection { get; set; }
 
 	[ClientInput] public Angles ViewAngles { get; set; }
+
+	/// <summary>
+	/// The player's current team
+	/// </summary>
+	[Net]
+	private Team PlayerTeam { get; set; } = Team.None;
+
+	/// <summary>
+	/// The information for the last piece of damage this player took.
+	/// </summary>
+	public DamageInfo LastDamage { get; protected set; }
 
 	/// <summary>
 	/// Position a player should be looking from in world space.
@@ -70,6 +82,7 @@ public partial class Pawn : AnimatedEntity
 	{
 		SetModel( "models/citizen/citizen.vmdl" );
 
+		Predictable = true;
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
@@ -89,9 +102,21 @@ public partial class Pawn : AnimatedEntity
 
 	public void Respawn()
 	{
+		SetupPhysicsFromCapsule( PhysicsMotionType.Keyframed, Capsule.FromHeightAndRadius( Hull.Maxs.z - Hull.Mins.z, Math.Abs( Hull.Maxs.x - Hull.Mins.x ) ) );
+
+		Health = 200;
+		LifeState = LifeState.Alive;
+		EnableAllCollisions = true;
+		EnableDrawing = true;
+
+		// Re-enable all children.
+		Children.OfType<ModelEntity>()
+			.ToList()
+			.ForEach( x => x.EnableDrawing = true );
+
 		Components.Create<PawnController>();
 		Components.Create<PawnAnimator>();
-		Components.Create<MoteBag>();
+		Components.GetOrCreate<MoteBag>();
 
 		SetActiveWeapon( new Pistol() );
 	}
@@ -170,6 +195,35 @@ public partial class Pawn : AnimatedEntity
 		{
 			Camera.FirstPersonViewer = this;
 			Camera.Position = EyePosition;
+
+			var tr = Trace.Ray( Camera.Position, Camera.Rotation.Forward * 10000 )
+				.WithAnyTags( "player" )
+				.Ignore( this )
+				.Radius( 8 )
+				.Run();
+
+			//If the player is looking at an enemy, make them glow
+			if(tr.Entity?.ClassName == "Pawn")
+			{
+				var enemy = tr.Entity as Pawn;
+				var glow = enemy.Components.GetOrCreate<Glow>();
+				if ( TeamSystem.IsHostile( Team, enemy.Team ) )
+				{
+					glow.Enabled = true;
+					glow.Width = 0.25f;
+					glow.Color = new Color( 1.0f, 0.0f, 0.0f, 0.5f );
+					glow.ObscuredColor = new Color( 1.0f, 0.0f, 0.0f, 1.0f );
+					glow.InsideColor = new Color( 1.0f, 0.0f, 0.0f, 0.1f );
+				}
+			}
+			else
+			{
+				//Remove the glow when looking away
+				foreach(var pawn in TeamExtensions.GetAll( TeamSystem.GetEnemyTeam( Team ) ))
+				{
+					pawn.Components.Remove( pawn.Components.Get<Glow>() );
+				}
+			}	
 		}
 	}
 
@@ -215,5 +269,91 @@ public partial class Pawn : AnimatedEntity
 				}
 			}
 		}
+	}
+
+	public virtual bool Alive()
+	{
+		return LifeState != LifeState.Alive;
+	}
+
+	public override void TakeDamage( DamageInfo info )
+	{
+		if ( LifeState != LifeState.Alive )
+			return;
+
+		if ( info.Attacker is Pawn p )
+		{
+			//No friendly fire
+			if ( p.Team == this.Team )
+				return;
+		}
+
+		// Check if we got hit by a bullet, if we did, play a sound.
+		if ( info.HasTag( "bullet" ) )
+		{
+			Sound.FromScreen( To.Single( Client ), "sounds/player/damage_taken_shot.sound" );
+		}
+
+		if ( Health > 0 && info.Damage > 0 )
+		{
+			Health -= info.Damage;
+
+			if ( Health <= 0 )
+			{
+				Health = 0;
+				OnKilled();
+			}
+		}
+		LastDamage = info;
+		this.ProceduralHitReaction( info );
+	}
+
+	public override void OnKilled()
+	{
+		var attacker = LastDamage.Attacker;
+
+		//Get the attackers team, if any
+		var attackerTeam = attacker is Pawn p ? p.Team : Team.None;
+
+		//Make player drop motes they were carrying
+		Log.Info( $"{Client.Pawn} dropped {Motebag.Motes} motes" );
+		for ( int i = 0; i < Motebag.Motes; i++)
+		{
+			var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
+			mote.Position = Position + Position.z * 5;
+			mote.Velocity = Camera.Rotation.Up * 512;
+			mote.Rotation = Rotation.Random;
+		}
+			
+		Motebag.Motes = 0;
+
+		if ( LifeState == LifeState.Alive )
+		{
+			//Log.Info($"Controller.Entity.Velocity, LastDamage.Position, LastDamage.Force {Controller.Entity.Velocity} {LastDamage.Position} {LastDamage.Force}" );
+			CreateRagdoll( Controller.Entity.Velocity, LastDamage.Position, LastDamage.Force,
+				LastDamage.BoneIndex, LastDamage.HasTag( "bullet" ), LastDamage.HasTag( "blast" ) );
+
+			LifeState = LifeState.Dead;
+			EnableAllCollisions = false;
+			EnableDrawing = false;
+
+			Controller.Remove();
+			Animator.Remove();
+			//Inventory.Remove();
+			//Camera.Remove();
+
+			// Disable all children as well.
+			Children.OfType<ModelEntity>()
+				.ToList()
+				.ForEach( x => x.EnableDrawing = false );
+
+			AsyncRespawn();
+		}
+	}
+
+	private async void AsyncRespawn()
+	{
+		await GameTask.DelaySeconds( 3f );
+		Respawn();
 	}
 }

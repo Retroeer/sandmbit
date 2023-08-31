@@ -1,6 +1,6 @@
 using Sandbox;
 
-namespace MyGame;
+namespace Sandmbit;
 
 public partial class WeaponViewModel : BaseViewModel
 {

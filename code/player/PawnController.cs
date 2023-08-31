@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MyGame;
+namespace Sandmbit;
 
 public class PawnController : EntityComponent<Pawn>
 {

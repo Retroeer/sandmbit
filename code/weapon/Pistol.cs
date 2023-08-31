@@ -1,6 +1,6 @@
 using Sandbox;
 
-namespace MyGame;
+namespace Sandmbit;
 
 public partial class Pistol : Weapon
 {
@@ -22,7 +22,7 @@ public partial class Pistol : Weapon
 	{
 		ShootEffects();
 		Pawn.PlaySound( "rust_pistol.shoot" );
-		ShootBullet( 0.1f, 100, 20, 1 );
+		ShootBullet( 0.1f, 1, 20, 1 );
 	}
 
 	protected override void Animate()
