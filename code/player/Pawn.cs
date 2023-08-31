@@ -69,7 +69,6 @@ public partial class Pawn : AnimatedEntity
 
 	public void Respawn()
 	{
-		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromCapsule( PhysicsMotionType.Keyframed, Capsule.FromHeightAndRadius( Hull.Maxs.z - Hull.Mins.z, Math.Abs( Hull.Maxs.x - Hull.Mins.x ) ) );
 
 		Health = 200;
@@ -90,6 +89,7 @@ public partial class Pawn : AnimatedEntity
 		SetActiveWeapon( new Pistol() );
 
 		GameManager.Current?.MoveToSpawnpoint( this );
+		Position = Position + Vector3.Up * 2;
 		ResetInterpolation();
 	}
 
@@ -214,7 +214,7 @@ public partial class Pawn : AnimatedEntity
 				mote.Velocity = new Vector3(Random.Shared.Float(-150,150)).WithZ(256);
 				mote.Rotation = Rotation.Random;
 			}
-			Motebag.Motes = 0;
+			Motebag.ClearMotes();
 		}
 		
 		if ( LifeState == LifeState.Alive )
@@ -230,8 +230,8 @@ public partial class Pawn : AnimatedEntity
 			Controller.Remove();
 			Animator.Remove();
 			Motebag.Remove();
-			//Inventory.Remove();
 			Camera.Remove();
+			ActiveWeapon.DestroyViewModel();
 
 			foreach ( var child in Children )
 			{

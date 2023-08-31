@@ -63,18 +63,14 @@ namespace Sandbox.player
 			else
 				return false;
 		}
+
+		public void ClearMotes()
+		{
+			Motes = 0;
+		}
 		
 		void OnMotesChanged(int oldValue, int newValue) {
 			Game.RootPanel.StateHasChanged();
 		}
-
-		//public void SetScore( Team team, int score )
-		//{
-		//	var newScore = Math.Clamp( score, 0, GetMaxScore() );
-		//	Scores[(int)team] = newScore;
-		//	OldScores = new int[ArraySize];
-
-		//	WriteNetworkData();
-		//}
 	}
 }

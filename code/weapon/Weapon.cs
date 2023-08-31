@@ -84,7 +84,7 @@ public partial class Weapon : AnimatedEntity
 			}
 		}
 		
-		if ( Game.IsServer && Input.Pressed( "attack2" ) )
+		if ( Game.IsServer && Input.Pressed( "attack2" ) && Owner.LifeState == LifeState.Alive )
 		{
 			var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
 			mote.Position = Camera.Position + Camera.Rotation.Forward * 100;
@@ -99,7 +99,7 @@ public partial class Weapon : AnimatedEntity
 	/// <returns></returns>
 	public virtual bool CanPrimaryAttack()
 	{
-		if ( !Owner.IsValid() || !Input.Down( "attack1" ) ) return false;
+		if ( !Owner.IsValid() || !Input.Down( "attack1" ) || Owner.LifeState != LifeState.Alive ) return false;
 
 		var rate = PrimaryRate;
 		if ( rate <= 0 ) return true;
