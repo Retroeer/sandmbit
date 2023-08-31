@@ -74,5 +74,11 @@ public partial class SandmbitGame : Sandbox.GameManager
 
 		Log.Info( $"{pawn.Client.Name} is on {pawn.Team}" );
 	}
+
+	[ConCmd.Server( "kill" )]
+	public static void DoSuicide()
+	{
+		(ConsoleSystem.Caller.Pawn as Pawn)?.TakeDamage( DamageInfo.Generic( 1000f ) );
+	}
 }
 
