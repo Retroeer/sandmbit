@@ -27,6 +27,12 @@ namespace Sandbox.entity
 			UsePhysicsCollision = true;
 
 			Tags.Add( "trigger" );
+
+			PointLightEntity moteGlow = new();
+			moteGlow.Parent = this;
+			moteGlow.Brightness = 0.1f;
+			moteGlow.Range = 128f;
+			moteGlow.Color = Color.White;
 		}
 	}
 }

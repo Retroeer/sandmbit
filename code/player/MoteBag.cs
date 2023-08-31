@@ -35,7 +35,7 @@ namespace Sandbox.player
 	public partial class MoteBag : EntityComponent
 	{
 		public int Motes { get; set; }
-		public int MaxMotes = 15;
+		public int MaxMotes = 20;
 		
 		/// <summary>
 		/// Get the largest blocker that can be summoned with the contents of this mote bag

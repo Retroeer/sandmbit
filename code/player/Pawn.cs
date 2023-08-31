@@ -4,7 +4,7 @@ using Sandbox.player;
 using System;
 using System.ComponentModel;
 
-namespace MyGame;
+namespace Sandmbit;
 
 public partial class Pawn : AnimatedEntity
 {
@@ -16,6 +16,12 @@ public partial class Pawn : AnimatedEntity
 	
 	[ClientInput]
 	public Angles ViewAngles { get; set; }
+
+	/// <summary>
+	/// The player's current team
+	/// </summary>
+	[Net]
+	private Team PlayerTeam { get; set; } = Team.None;
 
 	/// <summary>
 	/// Position a player should be looking from in world space.
