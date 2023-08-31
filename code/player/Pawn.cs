@@ -316,7 +316,7 @@ public partial class Pawn : AnimatedEntity
 		var attackerTeam = attacker is Pawn p ? p.Team : Team.None;
 
 		//Make player drop motes they were carrying
-		Log.Info( $"{Client.Pawn} dropped {Motebag.Motes} motes" );
+		Log.Info( $"{Client.Name} dropped {Motebag.Motes} motes" );
 		for ( int i = 0; i < Motebag.Motes; i++)
 		{
 			var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
