@@ -12,7 +12,7 @@
 
     <div class="header">
         @*<label>Gambit</label>*@
-        @{var motes = LocalPawn().Motes;}
+        @{var motes = LocalPawn().Motebag;}
 
         <label>@motes.Motes | Collected@(motes.Motes == motes.MaxMotes ? " (Max)" : "")</label>
         @if (@motes.AffordableBlocker() != BlockerType.None)

@@ -3,19 +3,17 @@ using Sandbox.entity;
 using Sandbox.player;
 using System;
 using System.ComponentModel;
+using Microsoft.VisualBasic;
 
 namespace MyGame;
 
 public partial class Pawn : AnimatedEntity
 {
-	[Net, Predicted]
-	public Weapon ActiveWeapon { get; set; }
+	[Net, Predicted] public Weapon ActiveWeapon { get; set; }
 
-	[ClientInput]
-	public Vector3 InputDirection { get; set; }
-	
-	[ClientInput]
-	public Angles ViewAngles { get; set; }
+	[ClientInput] public Vector3 InputDirection { get; set; }
+
+	[ClientInput] public Angles ViewAngles { get; set; }
 
 	/// <summary>
 	/// Position a player should be looking from in world space.
@@ -61,7 +59,7 @@ public partial class Pawn : AnimatedEntity
 	[BindComponent] public PawnController Controller { get; }
 	[BindComponent] public PawnAnimator Animator { get; }
 
-	[BindComponent] public MoteBag Motes{ get; }
+	[BindComponent] public MoteBag Motebag { get; }
 
 	public override Ray AimRay => new Ray( EyePosition, EyeRotation.Forward );
 
@@ -77,7 +75,8 @@ public partial class Pawn : AnimatedEntity
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
 
-		SetupPhysicsFromCapsule( PhysicsMotionType.Keyframed, Capsule.FromHeightAndRadius( Hull.Maxs.z - Hull.Mins.z, Math.Abs( Hull.Maxs.x - Hull.Mins.x ) ));
+		SetupPhysicsFromCapsule( PhysicsMotionType.Keyframed,
+			Capsule.FromHeightAndRadius( Hull.Maxs.z - Hull.Mins.z, Math.Abs( Hull.Maxs.x - Hull.Mins.x ) ) );
 		Tags.Add( "player" );
 	}
 
@@ -163,7 +162,7 @@ public partial class Pawn : AnimatedEntity
 				.Ignore( this )
 				.Radius( 8 )
 				.Run();
-			
+
 			Camera.FirstPersonViewer = null;
 			Camera.Position = tr.EndPosition;
 		}
@@ -171,14 +170,6 @@ public partial class Pawn : AnimatedEntity
 		{
 			Camera.FirstPersonViewer = this;
 			Camera.Position = EyePosition;
-		}
-
-		if ( Input.Pressed( "attack2" ) )
-		{
-			var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
-			mote.Position = Camera.Position + Camera.Rotation.Forward * 100;
-			mote.Velocity = Camera.Rotation.Forward * 512;
-			mote.Rotation = Rotation.Random;
 		}
 	}
 
@@ -196,10 +187,10 @@ public partial class Pawn : AnimatedEntity
 		}
 
 		var tr = Trace.Ray( start, end )
-					.Size( mins, maxs )
-					.WithAnyTags( "solid", "playerclip", "passbullets" )
-					.Ignore( this )
-					.Run();
+			.Size( mins, maxs )
+			.WithAnyTags( "solid", "playerclip", "passbullets" )
+			.Ignore( this )
+			.Run();
 
 		return tr;
 	}
@@ -212,11 +203,16 @@ public partial class Pawn : AnimatedEntity
 
 	public override void StartTouch( Entity other )
 	{
-		if(other is Mote mote)
+		if ( Game.IsServer )
 		{
-			if(Motes.AddMote())
+			if ( other is Mote mote )
 			{
-				mote.Delete();
+				if ( Motebag.AddMote() )
+				{
+					Log.Info(
+						$"Player {Client.Name} picked up a mote (have {Motebag.Motes}/{Motebag.MaxMotes}, blocker={Motebag.AffordableBlocker()})" );
+					mote.Delete();
+				}
 			}
 		}
 	}

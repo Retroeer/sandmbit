@@ -51,6 +51,61 @@
       "WarningsAsErrors": "",
       "References": [],
       "DistinctReferences": []
+    },
+    "Collision": {
+      "Defaults": {
+        "solid": "Collide",
+        "trigger": "Trigger",
+        "ladder": "Ignore",
+        "water": "Trigger",
+        "ethereal": "Collide",
+        "player": "Unset"
+      },
+      "Pairs": [
+        {
+          "a": "solid",
+          "b": "solid",
+          "r": "Collide"
+        },
+        {
+          "a": "trigger",
+          "b": "playerclip",
+          "r": "Ignore"
+        },
+        {
+          "a": "trigger",
+          "b": "solid",
+          "r": "Trigger"
+        },
+        {
+          "a": "solid",
+          "b": "trigger",
+          "r": "Collide"
+        },
+        {
+          "a": "playerclip",
+          "b": "solid",
+          "r": "Collide"
+        },
+        {
+          "a": "water",
+          "b": "water"
+        },
+        {
+          "a": "ethereal",
+          "b": "player",
+          "r": "Trigger"
+        },
+        {
+          "a": "ethereal",
+          "b": "ethereal"
+        },
+        {
+          "a": "solid",
+          "b": "ethereal",
+          "r": "Collide"
+        }
+      ]
     }
   }
 }

@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
+using MyGame.common;
 
 namespace Sandbox.entity
 {
 	[Library( "gambit_mote", Title = "Mote" )]
 	class Mote : ModelEntity
 	{
-		public Mote() : base() {
-			Model = Cloud.Model( "destiny.gambit_mote" );
-		}
+		[BindComponent] public SelfDestruct SelfDestruct { get; }
 
 		public override void Spawn()
 		{
+			Log.Info( "Summoned mote" );
+			Model = Cloud.Model( "destiny.gambit_mote" );
+			Components.Add( new SelfDestruct( 15 ) );
+
 			// Always network this entity to all clients
 			Transmit = TransmitType.Always;
 
@@ -27,6 +31,7 @@ namespace Sandbox.entity
 			UsePhysicsCollision = true;
 
 			Tags.Add( "trigger" );
+			Tags.Add( "ethereal" );
 		}
 	}
 }

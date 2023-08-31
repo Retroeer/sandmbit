@@ -34,7 +34,7 @@ namespace Sandbox.player
 
 	public partial class MoteBag : EntityComponent
 	{
-		public int Motes { get; set; }
+		[Net, Change] public int Motes { get; set; }
 		public int MaxMotes = 15;
 		
 		/// <summary>
@@ -57,12 +57,15 @@ namespace Sandbox.player
 			if ((Motes+1) <= MaxMotes)
 			{
 				Motes++;
-				Log.Info( $"Pick up mote (have {Motes}/{MaxMotes}, blocker={AffordableBlocker()})" );
-				Game.RootPanel.StateHasChanged();
+				// Game.RootPanel.StateHasChanged();
 				return true;
 			}
 			else
 				return false;
+		}
+		
+		void OnMotesChanged(int oldValue, int newValue) {
+			Game.RootPanel.StateHasChanged();
 		}
 	}
 }

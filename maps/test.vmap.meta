@@ -1,0 +1,27 @@
+{
+  "publish": {
+    "Allowed": true,
+    "Enabled": false,
+    "ProjectConfig": {
+      "Title": "test",
+      "Type": "map",
+      "Org": "local",
+      "Ident": "test",
+      "Tags": null,
+      "Schema": 0,
+      "HasAssets": false,
+      "AssetsPath": null,
+      "Resources": null,
+      "MenuResources": null,
+      "HasCode": false,
+      "CodePath": null,
+      "PackageReferences": [],
+      "EditorReferences": [
+        "destiny.sandmbit#local"
+      ],
+      "Metadata": {
+        "SingleAssetSource": "maps/test.vmap"
+      }
+    }
+  }
+}

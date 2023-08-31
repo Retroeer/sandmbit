@@ -1,5 +1,6 @@
 using Sandbox;
 using System.Collections.Generic;
+using Sandbox.entity;
 
 namespace MyGame;
 
@@ -81,6 +82,14 @@ public partial class Weapon : AnimatedEntity
 				TimeSincePrimaryAttack = 0;
 				PrimaryAttack();
 			}
+		}
+		
+		if ( Game.IsServer && Input.Pressed( "attack2" ) )
+		{
+			var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
+			mote.Position = Camera.Position + Camera.Rotation.Forward * 100;
+			mote.Velocity = Camera.Rotation.Forward * 512;
+			mote.Rotation = Rotation.Random;
 		}
 	}
 
