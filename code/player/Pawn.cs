@@ -2,9 +2,11 @@
 using Sandbox.Component;
 using Sandbox.entity;
 using Sandbox.player;
+using Sandbox.UI;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using static Sandbox.Material;
 
 namespace Sandmbit;
 
@@ -16,11 +18,7 @@ public partial class Pawn : AnimatedEntity
 
 	[ClientInput] public Angles ViewAngles { get; set; }
 
-	/// <summary>
-	/// The player's current team
-	/// </summary>
-	[Net]
-	private Team PlayerTeam { get; set; } = Team.None;
+	private Nameplate Nameplate { get; set; }
 
 	/// <summary>
 	/// The information for the last piece of damage this player took.
@@ -39,8 +37,14 @@ public partial class Pawn : AnimatedEntity
 	[BindComponent] public PawnController Controller { get; }
 	[BindComponent] public PawnAnimator Animator { get; }
 	[BindComponent] public PlayerCamera Camera { get; }
-
 	[BindComponent] public MoteBag Motebag { get; }
+
+	public override void ClientSpawn()
+	{
+		Nameplate = new Nameplate( this );
+
+		base.ClientSpawn();
+	}
 
 	/// <summary>
 	/// Called when the entity is first created 

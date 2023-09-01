@@ -1,6 +1,6 @@
 using Sandbox;
 
-namespace MyGame.common;
+namespace Sandmbit.common;
 
 public class SelfDestruct : EntityComponent
 {
@@ -17,7 +17,7 @@ public class SelfDestruct : EntityComponent
 	}
 
 
-	[GameEvent.Tick.Server]
+	[Sandbox.GameEvent.Tick.Server]
 	public void OnTick()
 	{
 		Lifetime -= Time.Delta;

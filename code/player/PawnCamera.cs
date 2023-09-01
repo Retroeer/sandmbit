@@ -56,7 +56,7 @@ public partial class PlayerCamera : EntityComponent<Pawn>, ISingletonComponent
 			Camera.Position = player.EyePosition;
 
 			var tr = Trace.Ray( Camera.Position, Camera.Rotation.Forward * 10000 )
-				.WithAnyTags( "player" )
+				.WithAnyTags( "world", "player" )
 				.Ignore( player )
 				.Radius( 8 )
 				.Run();
