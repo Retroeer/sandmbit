@@ -10,7 +10,7 @@ public partial class MoteGun : WeaponComponent, ISingletonComponent
 {
 	protected override bool CanStart( Pawn player )
 	{
-		if ( Input.Pressed( "attack2" ) ) return true;
+		if ( Input.Pressed( "attack3" ) ) return true;
 		return false;
 	}
 

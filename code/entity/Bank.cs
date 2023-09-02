@@ -17,7 +17,7 @@ namespace Sandbox.entity
 		public override void Spawn()
 		{
 			SetupPhysicsFromModel( PhysicsMotionType.Static );
-			Tags.Add( "solid", "playerclip" );
+			Tags.Add( "solid" );
 		}
 	}
 }

@@ -84,14 +84,6 @@ public partial class BasicWeapon : AnimatedEntity
 				PrimaryAttack();
 			}
 		}
-		
-		if ( Game.IsServer && Input.Pressed( "attack2" ) && Owner.LifeState == LifeState.Alive )
-		{
-			var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
-			mote.Position = Camera.Position + Camera.Rotation.Forward * 100;
-			mote.Velocity = Camera.Rotation.Forward * 512;
-			mote.Rotation = Rotation.Random;
-		}
 	}
 
 	/// <summary>
