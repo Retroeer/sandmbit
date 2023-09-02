@@ -9,7 +9,8 @@ public partial class PlayerCamera : EntityComponent<Pawn>, ISingletonComponent
 
 	public virtual void Update( Pawn player )
 	{
-		Camera.Rotation = player.ViewAngles.ToRotation();
+		Camera.Position = player.EyePosition;
+		Camera.Rotation = player.EyeRotation;
 		Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
 		Camera.FirstPersonViewer = player;
 		Camera.ZNear = 0.5f;

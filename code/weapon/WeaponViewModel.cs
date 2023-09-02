@@ -2,11 +2,11 @@ using Sandbox;
 
 namespace Sandmbit;
 
-public partial class WeaponViewModel : BaseViewModel
+public partial class BasicWeaponViewModel : BaseViewModel
 {
-	protected Weapon Weapon { get; init; }
+	protected BasicWeapon Weapon { get; init; }
 
-	public WeaponViewModel( Weapon weapon )
+	public BasicWeaponViewModel( BasicWeapon weapon )
 	{
 		Weapon = weapon;
 		EnableShadowCasting = false;

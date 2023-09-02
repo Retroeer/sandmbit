@@ -59,22 +59,12 @@ public partial class Pawn
 
 	public override void BuildInput()
 	{
-		InputDirection = Input.AnalogMove;
+		Inventory?.BuildInput();
 
-		if ( Input.StopProcessing )
-			return;
+		MoveInput = Input.AnalogMove;
+		var lookInput = (LookInput + Input.AnalogLook).Normal;
 
-		var look = Input.AnalogLook;
-
-		if ( ViewAngles.pitch > 90f || ViewAngles.pitch < -90f )
-		{
-			look = look.WithYaw( look.yaw * -1f );
-		}
-
-		var viewAngles = ViewAngles;
-		viewAngles += look;
-		viewAngles.pitch = viewAngles.pitch.Clamp( -89f, 89f );
-		viewAngles.roll = 0f;
-		ViewAngles = viewAngles.Normal;
+		// Since we're a FPS game, let's clamp the player's pitch between -90, and 90.
+		LookInput = lookInput.WithPitch( lookInput.pitch.Clamp( -90f, 90f ) );
 	}
 }

@@ -107,7 +107,7 @@ public partial class SandmbitScores : BaseNetworkable, INetworkSerializer
 		}
 		//MaximumScore = read.Read<int>();
 		
-		Event.Run( GameEvent.Shared.OnScoresChanged );
+		Event.Run( SandmbitGameEvent.Shared.OnScoresChanged );
 	}
 
 	public void Write( NetWrite write )

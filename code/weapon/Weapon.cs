@@ -1,15 +1,16 @@
 using Sandbox;
 using System.Collections.Generic;
 using Sandbox.entity;
+using Sandmbit.Weapons;
 
 namespace Sandmbit;
 
-public partial class Weapon : AnimatedEntity
+public partial class BasicWeapon : AnimatedEntity
 {
 	/// <summary>
 	/// The View Model's entity, only accessible clientside.
 	/// </summary>
-	public WeaponViewModel ViewModelEntity { get; protected set; }
+	public BasicWeaponViewModel ViewModelEntity { get; protected set; }
 
 	/// <summary>
 	/// An accessor to grab our Pawn.
@@ -198,7 +199,7 @@ public partial class Weapon : AnimatedEntity
 	{
 		if ( ViewModelPath == null ) return;
 
-		var vm = new WeaponViewModel( this );
+		var vm = new BasicWeaponViewModel( this );
 		vm.Model = Model.Load( ViewModelPath );
 		ViewModelEntity = vm;
 	}

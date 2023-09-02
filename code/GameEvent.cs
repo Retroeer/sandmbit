@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Sandmbit;
 
-public class GameEvent
+public class SandmbitGameEvent
 {
 	public class Server
 	{

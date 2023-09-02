@@ -1,29 +1,31 @@
 ﻿using Sandbox;
-using Sandbox.Component;
 using Sandbox.entity;
 using Sandbox.player;
-using Sandbox.UI;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using static Sandbox.Material;
+using Sandmbit.Weapons;
+using Sandmbit.Mechanics;
 
 namespace Sandmbit;
 
 public partial class Pawn : AnimatedEntity
 {
-	[Net, Predicted] public Weapon ActiveWeapon { get; set; }
-
-	[ClientInput] public Vector3 InputDirection { get; set; }
-
-	[ClientInput] public Angles ViewAngles { get; set; }
-
 	private Nameplate Nameplate { get; set; }
+
+	/// <summary>
+	/// Accessor for getting a player's active weapon.
+	/// </summary>
+	public Weapon ActiveWeapon => Inventory?.ActiveWeapon;
 
 	/// <summary>
 	/// The information for the last piece of damage this player took.
 	/// </summary>
 	public DamageInfo LastDamage { get; protected set; }
+
+	/// <summary>
+	/// How long since the player last played a footstep sound.
+	/// </summary>
+	public TimeSince TimeSinceFootstep { get; protected set; } = 0;
 
 	public BBox Hull
 	{
@@ -34,10 +36,11 @@ public partial class Pawn : AnimatedEntity
 		);
 	}
 
-	[BindComponent] public PawnController Controller { get; }
+	[BindComponent] public PlayerController Controller { get; }
 	[BindComponent] public PawnAnimator Animator { get; }
 	[BindComponent] public PlayerCamera Camera { get; }
 	[BindComponent] public MoteBag Motebag { get; }
+	[BindComponent] public Inventory Inventory { get; }
 
 	public override void ClientSpawn()
 	{
@@ -57,18 +60,12 @@ public partial class Pawn : AnimatedEntity
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
+		EnableLagCompensation = true;
 		EnableShadowInFirstPerson = true;
 
 		SetupPhysicsFromCapsule( PhysicsMotionType.Keyframed,
 			Capsule.FromHeightAndRadius( Hull.Maxs.z - Hull.Mins.z, Math.Abs( Hull.Maxs.x - Hull.Mins.x ) ) );
 		Tags.Add( "player" );
-	}
-
-	public void SetActiveWeapon( Weapon weapon )
-	{
-		ActiveWeapon?.OnHolster();
-		ActiveWeapon = weapon;
-		ActiveWeapon.OnEquip( this );
 	}
 
 	public void Respawn()
@@ -85,12 +82,24 @@ public partial class Pawn : AnimatedEntity
 			.ToList()
 			.ForEach( x => x.EnableDrawing = true );
 
+		Components.Create<PlayerController>();
+		// Remove old mechanics.
+		Components.RemoveAny<PlayerControllerMechanic>();
+
+		// Add mechanics.
+		Components.Create<WalkMechanic>();
+		Components.Create<JumpMechanic>();
+		Components.Create<AirMoveMechanic>();
+		Components.Create<SprintMechanic>();
+		Components.Create<CrouchMechanic>();
+		Components.Create<InteractionMechanic>();
+
 		Components.Create<PlayerCamera>();
-		Components.Create<PawnController>();
 		Components.Create<PawnAnimator>();
 		Components.Create<MoteBag>();
 
-		SetActiveWeapon( new Pistol() );
+		var inventory = Components.Create<Inventory>();
+		inventory.AddWeapon( PrefabLibrary.Spawn<Weapon>( "prefabs/pistol.prefab" ) );
 
 		GameManager.Current?.MoveToSpawnpoint( this );
 		Position = Position + Vector3.Up * 2;
@@ -108,14 +117,15 @@ public partial class Pawn : AnimatedEntity
 	{
 		SimulateRotation();
 		Controller?.Simulate( cl );
-		Animator?.Simulate();
-		ActiveWeapon?.Simulate( cl );
+		Animator?.Simulate( cl );
+		Inventory?.Simulate( cl );
 		EyeLocalPosition = Vector3.Up * (64f * Scale);
 	}
 
 	public override void FrameSimulate( IClient cl )
 	{
 		SimulateRotation();
+		Controller?.FrameSimulate( cl );
 		Camera?.Update( this );
 	}
 
@@ -143,8 +153,8 @@ public partial class Pawn : AnimatedEntity
 
 	protected void SimulateRotation()
 	{
-		EyeRotation = ViewAngles.ToRotation();
-		Rotation = ViewAngles.WithPitch( 0f ).ToRotation();
+		EyeRotation = LookInput.ToRotation();
+		Rotation = LookInput.WithPitch( 0f ).ToRotation();
 	}
 
 	public override void StartTouch( Entity other )
@@ -231,11 +241,11 @@ public partial class Pawn : AnimatedEntity
 			EnableAllCollisions = false;
 			EnableDrawing = false;
 
-			Controller.Remove();
-			Animator.Remove();
-			Motebag.Remove();
-			Camera.Remove();
-			ActiveWeapon.DestroyViewModel();
+			Controller?.Remove();
+			Animator?.Remove();
+			Motebag?.Remove();
+			Camera?.Remove();
+			Inventory?.Remove();
 
 			foreach ( var child in Children )
 			{
@@ -250,5 +260,38 @@ public partial class Pawn : AnimatedEntity
 	{
 		await GameTask.DelaySeconds( 3f );
 		Respawn();
+	}
+
+	/// <summary>
+	/// Called clientside every time we fire the footstep anim event.
+	/// </summary>
+	public override void OnAnimEventFootstep( Vector3 pos, int foot, float volume )
+	{
+		if ( !Game.IsClient )
+			return;
+
+		if ( LifeState != LifeState.Alive )
+			return;
+
+		if ( TimeSinceFootstep < 0.2f )
+			return;
+
+		volume *= GetFootstepVolume();
+
+		TimeSinceFootstep = 0;
+
+		var tr = Trace.Ray( pos, pos + Vector3.Down * 20 )
+			.Radius( 1 )
+			.Ignore( this )
+			.Run();
+
+		if ( !tr.Hit ) return;
+
+		tr.Surface.DoFootstep( this, tr, foot, volume );
+	}
+
+	protected float GetFootstepVolume()
+	{
+		return Controller.Velocity.WithZ( 0 ).Length.LerpInverse( 0.0f, 200.0f ) * 1f;
 	}
 }
