@@ -221,11 +221,12 @@ public partial class Pawn : AnimatedEntity
 		if( Game.IsServer )
 		{
 			Log.Info( $"{Client.Name} dropped {Motebag.Motes} motes" );
+			var rotationIncrement = 360f / Motebag.Motes;
 			for ( int i = 0; i < Motebag.Motes; i++ )
 			{
 				var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
 				mote.Position = EyePosition;
-				mote.Velocity = new Vector3(Random.Shared.Float(-150,150)).WithZ(256);
+				mote.Velocity = (Rotation.FromYaw(rotationIncrement * i + Random.Shared.Float( 15 )) * Rotation.FromPitch( -60 )).Forward * 192; //new Vector3(Random.Shared.Float(-150,150)).WithZ(256);
 				mote.Rotation = Rotation.Random;
 			}
 			Motebag.ClearMotes();
