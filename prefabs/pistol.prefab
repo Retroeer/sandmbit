@@ -189,11 +189,11 @@
           },
           "BulletSpread": {
             "Type": "Single",
-            "Value": "0.1"
+            "Value": "0.15"
           },
           "RPM": {
             "Type": "Single",
-            "Value": "500"
+            "Value": "360"
           },
           "FiringType": {
             "Type": "Firing_Type",
@@ -211,7 +211,7 @@
           },
           "MaxBurstCount": {
             "Type": "Int32",
-            "Value": "4"
+            "Value": "3"
           }
         }
       },
@@ -311,6 +311,10 @@
       "AmmoType": {
         "Type": "Ammo_Type",
         "Value": "\u0022Primary\u0022"
+      },
+      "WeaponType": {
+        "Type": "WeaponType",
+        "Value": "\u0022AutoRifle\u0022"
       }
     }
   }

@@ -14,14 +14,8 @@ public partial class Weapon : AnimatedEntity
 	[Net, Prefab, Category( "Animation" )] public WeaponHandedness Handedness { get; set; } = WeaponHandedness.Both;
 	[Net, Prefab, Category( "Animation" )] public float HoldTypePose { get; set; } = 0;
 
-	[Net, Prefab, Category( "General" )] public Ammo_Type AmmoType { get; set; }
-	public enum Ammo_Type
-	{
-		Primary,
-		Special,
-		Heavy
-	}
-
+	[Net, Prefab, Category( "General" )] public WeaponType WeaponType { get; set; }
+	[Net, Prefab, Category( "General" )] public AmmoType AmmoType { get; set; }
 	[Net, Prefab, Category( "General" )] public int Ammo { get; set; }
 	[Net, Prefab, Category( "General" )] public int ReserveAmmo { get; set; }
 	[Net, Prefab, Category( "General" ), ResourceType("png")] public string IconPath { get; set; }
@@ -95,14 +89,6 @@ public partial class Weapon : AnimatedEntity
 		//arms.Model = Model.Load( "models/arms/v_warlock_arms.vmdl" );
 		//arms.SetParent( vm, true );
 
-		//var test = Material.Load( "materials/calus-s-selected-weapon.vmat" );
-		//test.Set( "g_tDiffuse", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5e4aeb80_gstack.png" ) );
-		//test.Set( "GStackTexture", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5e4aeb80_gstack.png" ) );
-		//test.Set( "NormalTexture", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5d4aeb80_normal.png" ) );
-
-		//vm.SetMaterialOverride( test, "shader" );
-		//vm.SceneObject.Attributes.Set( "g_tDiffuse", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5e4aeb80_gstack.png" ) );
-
 		ViewModelEntity = vm;
 		ViewModelEntity.SetAnimParameter( "deploy", true );
 	}
@@ -130,6 +116,11 @@ public partial class Weapon : AnimatedEntity
 	{
 		return $"Weapon ({Name})";
 	}
+
+	public string Type()
+	{
+		return WeaponType.GetAttributeOfType<ClassNameAttribute>().Value;
+	}
 }
 
 /// <summary>
@@ -154,5 +145,56 @@ public enum WeaponHandedness
 	Both,
 	Right,
 	Left
+}
+
+/// <summary>
+/// Describes what type of ammo this weapon uses.
+/// </summary>
+public enum AmmoType
+{
+	Primary,
+	Special,
+	Heavy
+}
+
+/// <summary>
+/// Describes what type of weapon this is.
+/// </summary>
+public enum WeaponType
+{
+	[ClassName("Auto Rifle")]
+	AutoRifle,
+	[ClassName( "Combat Bow" )]
+	CombatBow,
+	[ClassName( "Fusion Rifle" )]
+	FusionRifle,
+	[ClassName( "Glaive" )]
+	Glaive,
+	[ClassName( "Grenade Launcher" )]
+	GrenadeLauncher,
+	[ClassName( "Hand Cannon" )]
+	HandCannon,
+	[ClassName( "Linear Fusion Rifle" )]
+	LinearFusionRifle,
+	[ClassName( "Machine Gun" )]
+	MachineGun,
+	[ClassName( "Pulse Rifle" )]
+	PulseRifle,
+	[ClassName( "Rocket Launcher" )]
+	RocketLauncher,
+	[ClassName( "Scout Rifle" )]
+	ScoutRifle,
+	[ClassName( "Shotgun" )]
+	Shotgun,
+	[ClassName( "Sidearm" )]
+	Sidearm,
+	[ClassName( "Sniper Rifle" )]
+	SniperRifle,
+	[ClassName( "Submachine Gun" )]
+	SubmachineGun,
+	[ClassName( "Sword" )]
+	Sword,
+	[ClassName( "Trace Rifle" )]
+	TraceRifle
 }
 
