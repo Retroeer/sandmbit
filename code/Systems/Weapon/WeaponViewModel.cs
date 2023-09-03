@@ -44,21 +44,6 @@ public partial class WeaponViewModel : AnimatedEntity
 		Camera.Main.SetViewModelCamera( 65f, 1, 500 );
 
 		AddEffects();
-		//if ( Input.Pressed( "attack2" ) )
-		//{
-		//	var test = Material.Load( "materials/calus-s-selected-weapon.vmat" );
-		//	//test.Set( "g_tDiffuse", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5e4aeb80_gstack.png" ) );
-		//	//test.Set( "GStack", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5e4aeb80_gstack.png" ) );
-		//	//test.Set( "NormalTexture", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5d4aeb80_normal.png" ) );
-
-		//	SetMaterialOverride( test, "shader" );
-		//}
-		//if (Input.Pressed("duck"))
-		//{
-		//	var test = Material.Load( "materials/testing-weapon.vmat" );
-		//	test.Set( "GStack", Texture.Load( FileSystem.Mounted, "models/weapons/seventhseraphcarbine/textures/5e4aeb80_gstack.png" ) );
-		//	SetMaterialOverride( test, "shader" );
-		//}
 	}
 
 	public override Sound PlaySound( string soundName, string attachment )

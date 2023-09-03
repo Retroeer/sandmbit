@@ -4,7 +4,7 @@ namespace Sandmbit.common;
 
 public class SelfDestruct : EntityComponent
 {
-	public float Lifetime { get; set; }
+	public TimeUntil Lifetime { get; set; }
 
 	public SelfDestruct()
 	{
@@ -20,7 +20,6 @@ public class SelfDestruct : EntityComponent
 	[Sandbox.GameEvent.Tick.Server]
 	public void OnTick()
 	{
-		Lifetime -= Time.Delta;
 		if ( Lifetime <= 0 )
 		{
 			Entity.Delete();

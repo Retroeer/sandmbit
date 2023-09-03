@@ -12,7 +12,6 @@ public partial class Weapon : AnimatedEntity
 	// Won't be Net eventually, when we serialize prefabs on client
 	[Net, Prefab, Category( "Animation" )] public WeaponHoldType HoldType { get; set; } = WeaponHoldType.Pistol;
 	[Net, Prefab, Category( "Animation" )] public WeaponHandedness Handedness { get; set; } = WeaponHandedness.Both;
-	[Net, Prefab, Category( "Animation" )] public float HoldTypePose { get; set; } = 0;
 
 	[Net, Prefab, Category( "General" )] public WeaponType WeaponType { get; set; }
 	[Net, Prefab, Category( "General" )] public AmmoType AmmoType { get; set; }
@@ -85,10 +84,13 @@ public partial class Weapon : AnimatedEntity
 		var vm = new WeaponViewModel( this );
 		vm.Model = Model.Load( comp.ViewModelPath );
 
-		//var arms = new WeaponViewModel( this, true );
-		//arms.Model = Model.Load( "models/arms/v_warlock_arms.vmdl" );
-		//arms.SetParent( vm, true );
-
+		if( comp.ViewModelHandsPath != null)
+		{
+			var arms = new WeaponViewModel( this, true );
+			arms.Model = Model.Load( comp.ViewModelHandsPath );
+			arms.SetParent( vm, true );
+		}
+		
 		ViewModelEntity = vm;
 		ViewModelEntity.SetAnimParameter( "deploy", true );
 	}
