@@ -2,6 +2,8 @@ using Sandmbit.Mechanics;
 using Sandbox;
 using static Sandbox.Event;
 using System.Collections.Generic;
+using System.Numerics;
+using static Sandmbit.Weapons.PrimaryFire;
 
 namespace Sandmbit.Weapons;
 
@@ -32,20 +34,55 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 
 	[Net, Prefab, ResourceType( "sound" )] public string FireSound { get; set; }
 
-	[Net, Predicted] public TimeUntil TimeUntilCanFire { get; set; }
-	[Net, Predicted] public TimeSince TimeSinceBurstFinished { get; set; }
-	[Net, Predicted] public bool IsBurstFiring { get; set; }
-	[Net, Predicted] protected int BurstCount { get; set; } = 0;
+	[Net, Predicted] private TimeSince TimeSinceBurstFinished { get; set; }
+	[Net, Predicted] public bool IsBurstFiring { get; set; } = false;
+	[Net, Predicted] private int BurstCount { get; set; } = 0;
 
 	protected override bool CanStart( Pawn player )
 	{
-		if ( !Input.Down( "attack1" ) ) return false;
 		if ( player.Controller.IsMechanicActive<SprintMechanic>() ) return false;
-		if ( Weapon.Ammo == 0 ) return false;
 
+		if ( CanBurst() )
+		{
+			BurstCount = 0;
+			IsBurstFiring = true;
+		}
+
+		if(IsBurstFiring)
+		{
+			if( BurstCount < MaxBurstCount)
+			{
+				if ( TimeSinceActivated > 60f / 900 && TimeSinceBurstFinished > 60f / RPM )
+				{
+					BurstCount++;
+					return true;
+				}
+			}
+			else
+			{
+				IsBurstFiring = false;
+				if ( TimeSinceBurstFinished > 60f / RPM )
+				{
+					TimeSinceBurstFinished = 0;	
+					return false;
+				}
+			}
+		}
+
+		if ( FiringType == Firing_Type.Auto && !Input.Down( "attack1" ) ) return false;
 		if ( FiringType == Firing_Type.Semi && !Input.Pressed( "attack1" ) ) return false;
 
-		return TimeSinceActivated > (60f/RPM);
+		if ( FiringType != Firing_Type.Burst ) return TimeSinceActivated > 60f / RPM;
+
+		return false;
+	}
+
+	public bool CanBurst()
+	{
+		if ( Weapon.Ammo == 0 ) return false;
+		if ( IsBurstFiring ) return false;
+
+		return FiringType == Firing_Type.Burst && Input.Pressed( "attack1" );
 	}
 
 	public override void OnGameEvent( string eventName )
@@ -60,7 +97,7 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 	{
 		base.OnStart( player );
 		player?.SetAnimParameter( "b_attack", true );
-
+		
 		// Send clientside effects to the player.
 		if ( Game.IsServer )
 		{
@@ -68,7 +105,7 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 			DoShootEffects( To.Single( player ) );
 		}
 
-		ShootBullet( BulletSpread, BulletForce, BulletSize, BulletCount, BulletRange );
+		ShootBullet( BulletSpread, BulletForce, BulletSize, BulletCount, BulletRange );	
 	}
 
 	[ClientRpc]
