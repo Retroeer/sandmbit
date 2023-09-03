@@ -226,7 +226,7 @@ public partial class Pawn : AnimatedEntity
 			{
 				var mote = TypeLibrary.Create<Mote>( "gambit_mote" );
 				mote.Position = EyePosition;
-				mote.Velocity = (Rotation.FromYaw(rotationIncrement * i + Random.Shared.Float( 15 )) * Rotation.FromPitch( -60 )).Forward * 192; //new Vector3(Random.Shared.Float(-150,150)).WithZ(256);
+				mote.Velocity = (Velocity*0.25f) + (Rotation.FromYaw(rotationIncrement * i + Random.Shared.Float( 15 )) * Rotation.FromPitch( -60 )).Forward * 192; //new Vector3(Random.Shared.Float(-150,150)).WithZ(256);
 				mote.Rotation = Rotation.Random;
 			}
 			Motebag.ClearMotes();
