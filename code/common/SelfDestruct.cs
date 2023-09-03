@@ -2,9 +2,9 @@ using Sandbox;
 
 namespace Sandmbit.common;
 
-public class SelfDestruct : EntityComponent
+public partial class SelfDestruct : EntityComponent
 {
-	public TimeUntil Lifetime { get; set; }
+	[Net] public TimeUntil Lifetime { get; set; }
 
 	public SelfDestruct()
 	{

@@ -17,7 +17,7 @@ namespace Sandbox.entity
 		{
 			Log.Info( "Summoned mote" );
 			Model = Cloud.Model( "destiny.gambit_mote" );
-			Components.Add( new SelfDestruct( 15 ) );
+			Components.Add( new SelfDestruct( 20 ) );
 
 			// Always network this entity to all clients
 			Transmit = TransmitType.Always;
@@ -37,6 +37,19 @@ namespace Sandbox.entity
 			moteGlow.Brightness = 0.1f;
 			moteGlow.Range = 128f;
 			moteGlow.Color = Color.White;
+		}
+
+		[Sandbox.GameEvent.PreRender]
+		public void BeforeRender()
+		{
+			if ( SelfDestruct.Lifetime.Relative <= 5 )
+			{
+				EnableDrawing = (SelfDestruct.Lifetime.Relative % 0.25) > 0.125;
+			}
+			else
+			{
+				EnableDrawing = true;
+			}
 		}
 	}
 }
