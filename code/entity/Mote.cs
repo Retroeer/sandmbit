@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
+using Sandmbit;
 using Sandmbit.common;
 
 namespace Sandbox.entity
@@ -15,7 +16,6 @@ namespace Sandbox.entity
 
 		public override void Spawn()
 		{
-			Log.Info( "Summoned mote" );
 			Model = Cloud.Model( "destiny.gambit_mote" );
 			Components.Add( new SelfDestruct( 20 ) );
 
@@ -36,7 +36,7 @@ namespace Sandbox.entity
 			moteGlow.Parent = this;
 			moteGlow.Brightness = 0.1f;
 			moteGlow.Range = 128f;
-			moteGlow.Color = Color.White;
+			moteGlow.Color = GameConfig.RainbowMotes ? new ColorHsv(Random.Shared.NextSingle() * 360, 1, 1).ToColor() : Color.White;
 		}
 
 		[Sandbox.GameEvent.PreRender]
