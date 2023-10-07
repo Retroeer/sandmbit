@@ -41,7 +41,8 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 	protected override bool CanStart( Pawn player )
 	{
 		if ( player.Controller.IsMechanicActive<SprintMechanic>() ) return false;
-
+		if ( Weapon.Ammo == 0 ) return false;
+		Log.Info( Weapon.Ammo );
 		if ( CanBurst() )
 		{
 			BurstCount = 0;

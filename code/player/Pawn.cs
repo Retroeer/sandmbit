@@ -99,8 +99,8 @@ public partial class Pawn : AnimatedEntity
 		Components.Create<MoteBag>();
 
 		var inventory = Components.Create<Inventory>();
-		inventory.AddWeapon( PrefabLibrary.Spawn<Weapon>( "prefabs/pistol.prefab" ) );
-
+		inventory.AddWeapon( PrefabLibrary.Spawn<Weapon>( "prefabs/placeholder/pistol.prefab" ) );
+		inventory.AddWeapon( PrefabLibrary.Spawn<Weapon>( "prefabs/placeholder/mp5.prefab" ) );
 		GameManager.Current?.MoveToSpawnpoint( this );
 		Position = Position + Vector3.Up * 2;
 		ResetInterpolation();

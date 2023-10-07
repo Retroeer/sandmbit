@@ -24,6 +24,7 @@ public partial class Reload : WeaponComponent, ISingletonComponent
 		if ( IsReloading || controller.IsMechanicActive<SprintMechanic>() ) return false;
 		if ( Weapon.Ammo == Weapon.MaxAmmo || Weapon.ReserveAmmo == 0 ) return false;
 		if ( Input.Down( "reload" ) ) return true;
+		if ( Weapon.Ammo == 0 && Input.Released( "attack1" ) ) return true;
 		return false;
 	}
 
