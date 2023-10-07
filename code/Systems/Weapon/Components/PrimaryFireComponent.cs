@@ -42,7 +42,6 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 	{
 		if ( player.Controller.IsMechanicActive<SprintMechanic>() ) return false;
 		if ( Weapon.Ammo == 0 ) return false;
-
 		if ( CanBurst() )
 		{
 			BurstCount = 0;
