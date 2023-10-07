@@ -17,7 +17,8 @@
       "CodePath": null,
       "PackageReferences": [],
       "EditorReferences": [
-        "destiny.sandmbit#local"
+        "destiny.sandmbit#local",
+        "drakefruit.glass_blocks_001#20452"
       ],
       "Metadata": {
         "SingleAssetSource": "maps/test.vmap"

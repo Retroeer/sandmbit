@@ -238,6 +238,8 @@ public partial class Pawn : AnimatedEntity
 			CreateRagdoll( Controller.Entity.Velocity, LastDamage.Position, LastDamage.Force,
 				LastDamage.BoneIndex, LastDamage.HasTag( "bullet" ), LastDamage.HasTag( "blast" ) );
 
+			Particles.Create( "particles/mote_burst.vpcf", Position );
+
 			LifeState = LifeState.Dead;
 			EnableAllCollisions = false;
 			EnableDrawing = false;
