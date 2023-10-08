@@ -19,6 +19,7 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 	[Net, Prefab, Category( "Bullet" )] public float BulletSize { get; set; }
 	[Net, Prefab, Category( "Bullet" )] public float BulletSpread { get; set; }
 
+	[Net, Prefab, Category( "Bullet" )] public float AimSpread { get; set; }
 	[Net, Prefab, Category( "General" )] public float RPM { get; set; }
 
 	protected AimDownSights AimData => Weapon.GetComponent<AimDownSights>();
@@ -105,7 +106,7 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 			DoShootEffects( To.Single( player ) );
 		}
 
-		ShootBullet( BulletSpread, BulletForce, BulletSize, BulletCount, BulletRange );	
+		ShootBullet( BulletSpread, AimSpread, BulletForce, BulletSize, BulletCount, BulletRange );	
 	}
 
 	[ClientRpc]
@@ -141,7 +142,7 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 		yield return tr;
 	}
 
-	public virtual void ShootBullet( float spread, float force, float bulletSize, int bulletCount = 1, float bulletRange = 5000f )
+	public virtual void ShootBullet( float spread, float aimSpread, float force, float bulletSize, int bulletCount = 1, float bulletRange = 5000f )
 	{
 		//
 		// Seed rand using the tick, so bullet cones match on client and server
@@ -153,7 +154,8 @@ public partial class PrimaryFire : WeaponComponent, ISingletonComponent
 			var rot = Rotation.LookAt( Player.AimRay.Forward );
 
 			var forward = rot.Forward;
-			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
+			float multiplier = Input.Down( "attack2" ) ? aimSpread : spread;
+			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * multiplier * 0.25f;
 			forward = forward.Normal;
 
 			var damage = BaseDamage;
